@@ -176,6 +176,51 @@
       border: 2px solid #000;
     }
 
+    /* Modal Styles */
+    .evolution-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .modal-content {
+      background: #fff;
+      border: 4px solid var(--main-black);
+      box-shadow: 8px 8px 0px var(--main-black);
+      padding: 24px;
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .timeline-card {
+      border-left: 6px solid var(--primary);
+      padding-left: 16px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .timeline-card::before {
+      content: '';
+      position: absolute;
+      left: -14px;
+      top: 0;
+      width: 20px;
+      height: 20px;
+      background: var(--main-black);
+      border: 3px solid #fff;
+    }
+
     .brutal-spinner-square {
       display: none;
       width: 20px;
@@ -286,6 +331,45 @@
         </div>
       </div>
 
+      <div style="margin-bottom: 16px;">
+        <details
+          style="cursor: pointer; background: #fff; border: 3px solid var(--main-black); padding: 12px; box-shadow: 4px 4px 0px var(--main-black);">
+          <summary style="font-weight: bold; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase;">➕ Add
+            Optional Context (Improves AI Analysis)</summary>
+          <div style="display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 150px;">
+              <label style="font-size: 0.85rem; font-weight: bold;">Current Stage</label>
+              <select id="inStage" class="brutal-input" style="padding: 8px; font-size: 0.9rem; margin-bottom: 0;">
+                <option value="Idea/Conceptual">Idea Only</option>
+                <option value="Prototype/MVP">Prototype / MVP</option>
+                <option value="Launched (Pre-Revenue)">Launched</option>
+                <option value="Generating Revenue">Generating Revenue/Impact</option>
+              </select>
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+              <label style="font-size: 0.85rem; font-weight: bold;">Team Capability</label>
+              <select id="inTeam" class="brutal-input" style="padding: 8px; font-size: 0.9rem; margin-bottom: 0;">
+                <option value="Solo Founder">Solo Founder</option>
+                <option value="Technical/Domain Experts">Domain Experts</option>
+                <option value="Balanced Team (Tech + Biz)">Balanced Team</option>
+                <option value="Outsourced">Outsourced Tech</option>
+              </select>
+            </div>
+            <div style="flex: 1; min-width: 150px;">
+              <label id="lblMonetization" style="font-size: 0.85rem; font-weight: bold;">Revenue Model</label>
+              <select id="inMonetization" class="brutal-input"
+                style="padding: 8px; font-size: 0.9rem; margin-bottom: 0;">
+                <option value="Subscription / SaaS">Subscription</option>
+                <option value="Ads / Sponsorships">Ads</option>
+                <option value="One-time Sales">One-time Sales</option>
+                <option value="Marketplace / Commission">Marketplace</option>
+                <option value="Donations / Grants">Donations (NGO)</option>
+              </select>
+            </div>
+          </div>
+        </details>
+      </div>
+
       <div style="margin-top: 8px; display: flex; align-items: center; gap: 16px;">
         <button class="brutal-btn" onclick="analyzeStartup()">Analyze Pitch</button>
         <span id="loaderAnalyze" class="brutal-spinner-square"></span>
@@ -296,8 +380,12 @@
     <div id="stateDashboard" class="brutal-card" style="background: #fff">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
         <h2>2. Live Dashboard — Month <span id="monthHeading">1</span> (<span id="startupTypeHeading"></span>)</h2>
-        <button class="brutal-btn small" style="background: var(--success);" onclick="exportData()">📥 Export
-          Log</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="brutal-btn small" style="background: var(--accent);" onclick="openEvolutionTimeline()">🕰 View
+            Evolution</button>
+          <button class="brutal-btn small" style="background: var(--success);" onclick="exportData()">📥 Export
+            Log</button>
+        </div>
       </div>
       <div class="stats-grid" id="statsGrid">
         <!-- Stats injected here -->
@@ -311,7 +399,7 @@
         <span><span id="lblScore3">Scalability:</span> <span id="scoreScale"></span>/100</span>
       </div>
 
-      <div style="margin-top: 24px; display: flex; align-items: center; gap: 16px;">
+      <div style="margin-top: 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
         <select id="scenarioDifficulty" class="brutal-input"
           style="width: auto; margin: 0; padding: 10px; font-weight: bold; cursor: pointer;">
           <option value="Easy">Easy</option>
@@ -319,7 +407,29 @@
           <option value="Hard">Hard</option>
         </select>
         <button class="brutal-btn" onclick="fetchScenario()">Generate Next Scenario</button>
+        <button class="brutal-btn" style="background: #fff; color: var(--main-black);"
+          onclick="toggleRefinementPanel()">✍️ Refine Pitch</button>
         <span id="loaderScenario" class="brutal-spinner-square"></span>
+      </div>
+
+      <!-- Pitch Refinement UI -->
+      <div id="refinementPanel"
+        style="display: none; margin-top: 16px; padding: 16px; border: 3px dashed var(--main-black); background: #fafafa;">
+        <h3 style="margin-bottom: 8px;">Pivot / Refine Your Core Idea</h3>
+        <p style="font-size: 0.85rem; margin-bottom: 12px; color: #555;"><strong>Cost:</strong> 1 Month Timeline delay &
+          $1,000 budget deduction. Use AI feedback to pivot intelligently.</p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div>
+            <label style="font-size: 0.85rem; font-weight: bold;">Refined Problem</label>
+            <input type="text" id="refineProblem" class="brutal-input">
+          </div>
+          <div>
+            <label style="font-size: 0.85rem; font-weight: bold;">Refined Solution</label>
+            <input type="text" id="refineSolution" class="brutal-input">
+          </div>
+          <button class="brutal-btn" style="align-self: flex-start; background: var(--secondary); color: #fff;"
+            onclick="saveRefinement()">Save Pivot</button>
+        </div>
       </div>
     </div>
 
@@ -333,6 +443,13 @@
 
       <div class="scenario-choices" id="choicesContainer">
         <!-- Buttons injected here -->
+      </div>
+
+      <!-- Consequences / Metric Differences -->
+      <div id="metricChanges"
+        style="display: none; margin-top: 24px; padding: 16px; background: #fff; border: 3px dashed var(--main-black);">
+        <h3 style="margin-bottom: 12px; text-transform: uppercase;">📊 Outcomes</h3>
+        <div id="metricChangesList" style="display: flex; gap: 12px; flex-wrap: wrap;"></div>
       </div>
 
       <!-- Suggestions Section -->
@@ -377,6 +494,7 @@
     let stateBeforeDecision = null; // Saves state before simulation step
     let currentAppMode = 'business';
     let latestChoices = []; // Cache choices so we can restore them on Undo
+    let timelineHistory = []; // Tracks Version History
 
     function setMode(mode) {
       currentAppMode = mode;
@@ -386,6 +504,8 @@
       if (mode === 'nonprofit') {
         document.getElementById('lblUsers').innerText = "Target Community";
         document.getElementById('lblBudget').innerText = "Initial Grant ($)";
+        const monLbl = document.getElementById('lblMonetization');
+        if (monLbl) monLbl.innerText = "Funding Model";
         document.getElementById('pitchSection').style.background = "var(--success)";
         document.getElementById('pitchTitle').innerText = "1. Pitch Your NGO";
         document.getElementById('inProblem').value = "Lack of access to fresh, nutritious food in urban food deserts.";
@@ -394,6 +514,8 @@
       } else {
         document.getElementById('lblUsers').innerText = "Target Users";
         document.getElementById('lblBudget').innerText = "Starting Budget ($)";
+        const monLbl = document.getElementById('lblMonetization');
+        if (monLbl) monLbl.innerText = "Revenue Model";
         document.getElementById('pitchSection').style.background = "var(--secondary)";
         document.getElementById('pitchTitle').innerText = "1. Pitch Your Startup";
         document.getElementById('inProblem').value = "People are too busy to cook healthy meals.";
@@ -423,6 +545,9 @@
         solution: document.getElementById('inSolution').value,
         target_users: document.getElementById('inUsers').value,
         budget: parseInt(document.getElementById('inBudget').value),
+        stage: document.getElementById('inStage') ? document.getElementById('inStage').value : undefined,
+        team_capability: document.getElementById('inTeam') ? document.getElementById('inTeam').value : undefined,
+        monetization: document.getElementById('inMonetization') ? document.getElementById('inMonetization').value : undefined,
         mode: currentAppMode
       };
 
@@ -437,6 +562,10 @@
         log('ANALYSIS RESULT', data);
 
         currentState = data._initialState;
+
+        // Reset History on new pitch
+        timelineHistory = [];
+        captureSnapshot("Initial Pitch");
 
         document.getElementById('startupTypeHeading').innerText = data.startup_type;
         updateDashboard(currentState);
@@ -454,8 +583,8 @@
       document.getElementById('monthHeading').innerText = state.month;
 
       const grid = document.getElementById('statsGrid');
-      const statCard = (label, val, themeClass = '') => `
-        <div class="stat-box ${themeClass}">
+      const statCard = (label, val, tooltip, themeClass = '') => `
+        <div class="stat-box ${themeClass}" title="${tooltip}" style="cursor: help; text-decoration: underline dotted; text-underline-offset: 4px;">
           <div class="stat-value">${val}</div>
           <div class="stat-label">${label}</div>
         </div>
@@ -463,13 +592,29 @@
 
       const isNGO = state.mode === 'nonprofit';
 
+      const tooltips = isNGO ? {
+        score: "Overall Health based on alignment, ops, and sustainability.",
+        budget: "Total grant money and donations available to spend.",
+        users: "Number of community members positively impacted.",
+        risk: "Operational risk of failure, burnout, or non-compliance.",
+        retention: "Trust from the local community and stakeholders.",
+        growth: "Efficiency in scaling operations and impact over time."
+      } : {
+        score: "Overall Startup Health based on idea, market, and scaling.",
+        budget: "Current cash available (runway).",
+        users: "Active paying or engaged users on the platform.",
+        risk: "Likelihood of catastrophic failure (run out of money/legal trouble).",
+        retention: "Percentage of users that keep coming back (churn inverse).",
+        growth: "Month-over-month platform growth rate."
+      };
+
       grid.innerHTML = `
-        ${statCard('Score', state.score, state.score > 70 ? 'high' : (state.score < 40 ? 'danger' : ''))}
-        ${statCard(isNGO ? 'Funding' : 'Budget', '$' + state.budget)}
-        ${statCard(isNGO ? 'Impacted' : 'Users', state.users)}
-        ${statCard(isNGO ? 'Ops Risk' : 'Risk', state.risk + '%', state.risk > 50 ? 'danger' : '')}
-        ${statCard(isNGO ? 'Comm Trust' : 'Retention', state.retention + '%')}
-        ${statCard(isNGO ? 'Efficiency' : 'Growth', state.growth + '%')}
+        ${statCard('Score', state.score, tooltips.score, state.score > 70 ? 'high' : (state.score < 40 ? 'danger' : ''))}
+        ${statCard(isNGO ? 'Funding' : 'Budget', '$' + state.budget, tooltips.budget)}
+        ${statCard(isNGO ? 'Impacted' : 'Users', state.users, tooltips.users)}
+        ${statCard(isNGO ? 'Ops Risk' : 'Risk', state.risk + '%', tooltips.risk, state.risk > 50 ? 'danger' : '')}
+        ${statCard(isNGO ? 'Comm Trust' : 'Retention', state.retention + '%', tooltips.retention)}
+        ${statCard(isNGO ? 'Efficiency' : 'Growth', state.growth + '%', tooltips.growth)}
       `;
 
       if (state.score_breakdown) {
@@ -508,6 +653,7 @@
       document.getElementById('feedbackOptions').style.display = 'none';
       document.getElementById('feedbackSuggestions').style.display = 'none';
       document.getElementById('undoOptions').style.display = 'none';
+      document.getElementById('metricChanges').style.display = 'none';
       document.getElementById('scenarioText').innerText = "Generating next major hurdle...";
 
       const diffElement = document.getElementById('scenarioDifficulty');
@@ -585,6 +731,73 @@
         currentState = stepData.new_state;
         updateDashboard(currentState);
 
+        const diffs = [];
+        const isNGO = currentState.mode === 'nonprofit';
+
+        const bLabel = isNGO ? 'Funding' : 'Budget';
+        if (currentState.budget !== stateBeforeDecision.budget) {
+          const diff = currentState.budget - stateBeforeDecision.budget;
+          diffs.push(`${bLabel}: ${diff > 0 ? '⬆ +$' + diff : '⬇ -$' + Math.abs(diff)}`);
+        }
+
+        const uLabel = isNGO ? 'Impacted' : 'Users';
+        if (currentState.users !== stateBeforeDecision.users) {
+          const diff = currentState.users - stateBeforeDecision.users;
+          diffs.push(`${uLabel}: ${diff > 0 ? '⬆ +' + diff : '⬇ ' + diff}`);
+        }
+
+        const rLabel = isNGO ? 'Ops Risk' : 'Risk';
+        if (currentState.risk !== stateBeforeDecision.risk) {
+          const diff = currentState.risk - stateBeforeDecision.risk;
+          diffs.push(`${rLabel}: ${diff > 0 ? '⬆ +' + diff + '%' : '⬇ ' + diff + '%'}`);
+        }
+
+        const tLabel = isNGO ? 'Comm Trust' : 'Retention';
+        if (currentState.retention !== stateBeforeDecision.retention) {
+          const diff = currentState.retention - stateBeforeDecision.retention;
+          diffs.push(`${tLabel}: ${diff > 0 ? '⬆ +' + diff + '%' : '⬇ ' + diff + '%'}`);
+        }
+
+        const gLabel = isNGO ? 'Efficiency' : 'Growth';
+        if (currentState.growth !== stateBeforeDecision.growth) {
+          const diff = currentState.growth - stateBeforeDecision.growth;
+          diffs.push(`${gLabel}: ${diff > 0 ? '⬆ +' + diff + '%' : '⬇ ' + diff + '%'}`);
+        }
+
+        const changesList = document.getElementById('metricChangesList');
+        changesList.innerHTML = '';
+        diffs.forEach(d => {
+          const span = document.createElement('span');
+          span.style.padding = '4px 12px';
+          span.style.border = '2px solid var(--main-black)';
+          span.style.fontWeight = 'bold';
+          span.style.boxShadow = '2px 2px 0px var(--main-black)';
+
+          if (d.includes('⬆')) {
+            if (d.includes('Risk')) {
+              span.style.background = 'var(--secondary)';
+              span.style.color = 'white';
+            } else {
+              span.style.background = 'var(--success)';
+            }
+          } else if (d.includes('⬇')) {
+            if (d.includes('Risk')) {
+              span.style.background = 'var(--success)';
+              span.style.color = 'var(--main-black)';
+            } else {
+              span.style.background = 'var(--secondary)';
+              span.style.color = 'white';
+            }
+          } else {
+            span.style.background = '#eee';
+          }
+          span.innerText = d;
+          changesList.appendChild(span);
+        });
+
+        // Metric changes visually populated, but we wait to show them until after feedback generation
+        document.getElementById('metricChanges').style.display = 'none';
+
         log('SIMULATION RESULT', stepData);
 
         document.getElementById('scenarioText').innerText = `Calculation complete! Metrics mapped successfully.\nDecision made: ${decision}.\nCheck your updated dashboard. Would you like the AI to break down the nuance of these massive timeline shifts?`;
@@ -649,6 +862,14 @@
           document.getElementById('undoOptions').style.display = 'block';
         }
 
+        // Show metric outcomes now that the story is generated
+        if (document.getElementById('metricChangesList').innerHTML !== '') {
+          document.getElementById('metricChanges').style.display = 'block';
+        }
+
+        // Push snapshot to Version History since the month successfully finalized
+        captureSnapshot("Month " + (currentState.month - 1) + " Resolved");
+
         toggleLoader('loaderChoice', false);
       } catch (e) {
         if (typeof estTimer !== 'undefined' && estTimer) clearInterval(estTimer);
@@ -661,6 +882,9 @@
     function undoDecision() {
       if (!stateBeforeDecision) return;
 
+      // Pop the failed month from history
+      timelineHistory.pop();
+
       currentState = JSON.parse(JSON.stringify(stateBeforeDecision));
       updateDashboard(currentState);
 
@@ -668,6 +892,7 @@
       document.getElementById('feedbackOptions').style.display = 'none';
       document.getElementById('feedbackSuggestions').style.display = 'none';
       document.getElementById('undoOptions').style.display = 'none';
+      document.getElementById('metricChanges').style.display = 'none';
 
       const choicesContainer = document.getElementById('choicesContainer');
       choicesContainer.innerHTML = '';
@@ -743,7 +968,108 @@ ${document.getElementById('scenarioText').innerText}${suggestionsText}`;
 
       doc.save(`Startup_Report_Month_${currentState.month}.pdf`);
     }
+
+    // --- VERSION COMPARISON & PITCH REFINEMENT LOGIC ---
+    function captureSnapshot(eventType) {
+      if (!currentState) return;
+      timelineHistory.push({
+        eventType: eventType,
+        month: currentState.month,
+        state: JSON.parse(JSON.stringify(currentState))
+      });
+    }
+
+    function toggleRefinementPanel() {
+      const panel = document.getElementById('refinementPanel');
+      if (panel.style.display === 'none') {
+        panel.style.display = 'block';
+        if (currentState) {
+          document.getElementById('refineProblem').value = currentState.pitch.problem;
+          document.getElementById('refineSolution').value = currentState.pitch.solution;
+        }
+      } else {
+        panel.style.display = 'none';
+      }
+    }
+
+    function saveRefinement() {
+      const newProblem = document.getElementById('refineProblem').value;
+      const newSolution = document.getElementById('refineSolution').value;
+
+      currentState.pitch.problem = newProblem;
+      currentState.pitch.solution = newSolution;
+      currentState.month += 1;
+      currentState.budget = Math.max(0, currentState.budget - 1000); // Cost of pivoting
+
+      captureSnapshot("Pivoted/Refined Pitch");
+      updateDashboard(currentState);
+
+      document.getElementById('refinementPanel').style.display = 'none';
+
+      const scText = document.getElementById('scenarioText');
+      if (scText.innerText && !scText.innerText.includes("Pitch successfully refined")) {
+        scText.innerText += "\\n\\n[SYSTEM] Pitch successfully refined. 1 Month and $1,000 deducted for strategic pivot.";
+      }
+    }
+
+    function openEvolutionTimeline() {
+      const modal = document.getElementById('evolutionModal');
+      const container = document.getElementById('timelineContainer');
+      container.innerHTML = '';
+
+      if (timelineHistory.length === 0) {
+        container.innerHTML = '<i>No history recorded yet. Analyze a pitch first!</i>';
+      } else {
+        timelineHistory.forEach((snap, idx) => {
+          let diffHtml = '';
+          const s = snap.state;
+
+          if (snap.eventType === "Pivoted/Refined Pitch") {
+            const prev = timelineHistory[idx - 1];
+            if (prev) {
+              diffHtml = `
+                 <div style="margin-top: 8px; padding: 8px; background: #e3f2fd; border-left: 4px solid #1e88e5;">
+                   <b style="color: #c62828;">Previous Problem:</b> <s>${prev.state.pitch.problem}</s><br>
+                   <b style="color: #2e7d32;">New Problem:</b> ${s.pitch.problem}<br><br>
+                   <b style="color: #c62828;">Previous Solution:</b> <s>${prev.state.pitch.solution}</s><br>
+                   <b style="color: #2e7d32;">New Solution:</b> ${s.pitch.solution}
+                 </div>
+               `;
+            }
+          }
+
+          const card = document.createElement('div');
+          card.className = 'timeline-card';
+          const isNGO = currentState && currentState.mode === 'nonprofit';
+          const uLabel = isNGO ? 'Impact' : 'Users';
+
+          card.innerHTML = `
+            <div style="font-weight: bold; font-size: 1.1rem; color: var(--main-black);">Month ${snap.month} — ${snap.eventType}</div>
+            <div style="font-size: 0.85rem; color: #666; margin-bottom: 8px;">Budget: $${s.budget} | ${uLabel}: ${s.users} | Score: ${s.score}/100 (${s.startup_type || s.mode || ''})</div>
+            ${diffHtml}
+          `;
+          container.appendChild(card);
+        });
+      }
+      modal.style.display = 'flex';
+    }
+
+    function closeEvolutionTimeline() {
+      document.getElementById('evolutionModal').style.display = 'none';
+    }
   </script>
+
+  <!-- Evolution Modal -->
+  <div id="evolutionModal" class="evolution-modal">
+    <div class="modal-content">
+      <h2
+        style="margin-bottom: 16px; border-bottom: 4px solid var(--main-black); padding-bottom: 8px; text-transform: uppercase;">
+        🕰 Startup Evolution History</h2>
+      <div id="timelineContainer"></div>
+      <button class="brutal-btn" style="margin-top: 24px; background: var(--main-black); color: white;"
+        onclick="closeEvolutionTimeline()">Close Timeline</button>
+    </div>
+  </div>
 </body>
 
 </html>
