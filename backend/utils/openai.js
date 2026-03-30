@@ -36,16 +36,12 @@ code here
     );
 
     const data = await response.json();
-
-    // 🔥 Debug log (VERY IMPORTANT)
     console.log("OpenAI Response:", data);
 
-    // ❌ Handle API errors
     if (!response.ok) {
       throw new Error(data?.error?.message || "OpenAI API error");
     }
 
-    // ❌ Handle missing choices
     if (!data.choices || data.choices.length === 0) {
       throw new Error("No response from OpenAI");
     }
@@ -53,9 +49,9 @@ code here
     return data.choices[0].message.content;
 
   } catch (error) {
-    console.error("🔥 FULL OpenAI Error:", error); // print full
+    console.error("🔥 FULL OpenAI Error:", error); 
 
-    throw new Error(error.message); // ✅ show real error
+    throw new Error(error.message); 
   }
 };
 
