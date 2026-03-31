@@ -314,7 +314,17 @@
         <button id="modeNonprofit" class="brutal-btn small" style="background: #fff;" onclick="setMode('nonprofit')">🤝
           Non-Profit</button>
         <button class="brutal-btn small" onclick="toggleLog()" style="margin-left:8px;">Toggle AI Console</button>
+        <button class="brutal-btn small" onclick="toggleWatchlist()" style="background: var(--accent); color: #111; font-weight: bold; margin-left:8px;">📜 View Watchlist</button>
       </div>
+    </div>
+
+    <!-- Watchlist Section -->
+    <div id="watchlistSection" class="brutal-card" style="display: none; background: var(--secondary)">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h2>📜 My Startup Watchlist (Max 10)</h2>
+        <button class="brutal-btn small" onclick="toggleWatchlist()">Back to Pitch</button>
+      </div>
+      <div id="watchlist-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
     </div>
 
     <!-- Pitch Section -->
@@ -391,10 +401,11 @@
     </div>
 
     <!-- State Dashboard -->
-    <div id="stateDashboard" class="brutal-card" style="background: #fff">
+    <div id="stateDashboard" class="brutal-card" style="background: #fff; display: none;">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
         <h2>2. Live Dashboard — Month <span id="monthHeading">1</span> (<span id="startupTypeHeading"></span>)</h2>
         <div style="display: flex; gap: 8px;">
+          <button id="saveToWatchlistBtn" class="brutal-btn small" style="background: var(--primary); display: none;" onclick="saveToWatchlist()">Save to Watchlist</button>
           <button class="brutal-btn small" style="background: var(--accent);" onclick="openEvolutionTimeline()">🕰 View
             Evolution</button>
           <button class="brutal-btn small" style="background: var(--success);" onclick="exportData()">📥 Export
@@ -586,9 +597,83 @@
         document.getElementById('stateDashboard').style.display = 'block';
         document.getElementById('scenarioSection').style.display = 'none';
 
+        // Set up the Save to Watchlist feature manually
+        window.currentLlmResponse = data;
+        const saveBtn = document.getElementById('saveToWatchlistBtn');
+        saveBtn.style.display = 'inline-block';
+        saveBtn.innerText = 'Save to Watchlist';
+        saveBtn.disabled = false;
+
       } catch (e) {
         toggleLoader('loaderAnalyze', false);
         log('ERROR', e);
+      }
+    }
+
+    function toggleWatchlist() {
+      const watchlistSection = document.getElementById('watchlistSection');
+      const pitchSection = document.getElementById('pitchSection');
+      const stateDashboard = document.getElementById('stateDashboard');
+      const scenarioSection = document.getElementById('scenarioSection');
+      const logSection = document.getElementById('logSection');
+      const choiceSection = document.getElementById('choiceSection');
+
+      const isOpen = watchlistSection.style.display === 'block';
+
+      if (isOpen) {
+        // Close: show pitch/dashboard
+        watchlistSection.style.display = 'none';
+        pitchSection.style.display = 'block';
+      } else {
+        // Open: hide everything else
+        watchlistSection.style.display = 'block';
+        pitchSection.style.display = 'none';
+        if (stateDashboard) stateDashboard.style.display = 'none';
+        if (scenarioSection) scenarioSection.style.display = 'none';
+        if (logSection) logSection.style.display = 'none';
+        if (choiceSection) choiceSection.style.display = 'none';
+        // Always reload latest data when opening
+        fetchWatchlist();
+      }
+    }
+
+    async function saveToWatchlist() {
+      const btn = document.getElementById('saveToWatchlistBtn');
+      btn.innerText = 'Saving...';
+      btn.disabled = true;
+
+      const payload = {
+        problemStatement: document.getElementById('inProblem').value,
+        solution: document.getElementById('inSolution').value,
+        llmResponse: window.currentLlmResponse
+      };
+
+      console.log("Payload being sent:", payload);
+
+      try {
+        // The global fetch interceptor auto-attaches the Clerk JWT token
+        const res = await fetch(`${API_URL}/save-to-watchlist`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          console.error("Backend returned error:", data);
+          throw new Error(data.error || 'Server error during save');
+        }
+
+        btn.innerText = 'Saved! (View Watchlist ↑)';
+        
+        // Open watchlist so user instantly sees their saved project
+        toggleWatchlist();
+
+      } catch (err) {
+        console.error("Save to watchlist error:", err);
+        alert(`Failed to save to Watchlist: ${err.message} (Please check the backend terminal running 'npm start' for precise debug logs)`);
+        btn.innerText = 'Save to Watchlist';
+        btn.disabled = false;
       }
     }
 
@@ -1070,6 +1155,120 @@ ${document.getElementById('scenarioText').innerText}${suggestionsText}`;
 
     function closeEvolutionTimeline() {
       document.getElementById('evolutionModal').style.display = 'none';
+    }
+
+    let watchlistVisible = false;
+
+    async function toggleWatchlist() {
+      watchlistVisible = !watchlistVisible;
+      const wlSection = document.getElementById('watchlistSection');
+      const pitchSection = document.getElementById('pitchSection');
+      const stateDashboard = document.getElementById('stateDashboard');
+      const scenarioSection = document.getElementById('scenarioSection');
+      const logSection = document.getElementById('logSection');
+
+      if (watchlistVisible) {
+        wlSection.style.display = 'block';
+        pitchSection.style.display = 'none';
+        stateDashboard.style.display = 'none';
+        scenarioSection.style.display = 'none';
+        logSection.style.display = 'none';
+        await fetchWatchlist();
+      } else {
+        wlSection.style.display = 'none';
+        pitchSection.style.display = 'block';
+        if (currentState) {
+          stateDashboard.style.display = 'block';
+          scenarioSection.style.display = 'block';
+        }
+        logSection.style.display = 'block';
+      }
+    }
+
+    async function fetchWatchlist() {
+      const container = document.getElementById('watchlist-container');
+      container.innerHTML = '<div style="padding: 20px; text-align: center;"><span class="brutal-spinner-square"></span> Loading Watchlist...</div>';
+      try {
+        const res = await fetch(`${API_URL}/watchlist`);
+        if (!res.ok) throw new Error('Failed to load watchlist');
+        const projects = await res.json();
+        
+        container.innerHTML = '';
+        if (projects.length === 0) {
+          container.innerHTML = '<p>No projects in watchlist yet. Analyze a pitch to save it!</p>';
+          return;
+        }
+
+        projects.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'brutal-card';
+          card.style.background = '#fff';
+          card.innerHTML = `
+            <div style="margin-bottom: 8px;">
+              <h3 style="margin-bottom: 4px;">${p.problemStatement || "Problem Statement"}</h3>
+              <p><strong>Solution:</strong> ${p.solution || "Solution Details"}</p>
+            </div>
+            <div style="font-size: 0.8rem; color: #555; margin-bottom: 12px;">Saved on: ${new Date(p.createdAt).toLocaleString()}</div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button class="brutal-btn small" style="background: var(--primary);" onclick="evolveProject('${p._id}')" id="btn-evolve-${p._id}">🌟 Evolve Prototype</button>
+              <span id="loader-evolve-${p._id}" class="brutal-spinner-square" style="display: none; width: 16px; height: 16px;"></span>
+            </div>
+            <div id="result-${p._id}" style="margin-top: 16px; padding: 16px; border: 3px dashed var(--main-black); display: none; background: #e8f5e9;"></div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = '<p>Error loading watchlist. Check console.</p>';
+      }
+    }
+
+    async function evolveProject(projectId) {
+      const btn = document.getElementById(`btn-evolve-${projectId}`);
+      const loader = document.getElementById(`loader-evolve-${projectId}`);
+      const resContainer = document.getElementById(`result-${projectId}`);
+      
+      btn.disabled = true;
+      btn.innerText = "Evolving startup...";
+      loader.style.display = 'inline-block';
+      resContainer.style.display = 'none';
+
+      try {
+        const res = await fetch(`${API_URL}/iterate-startup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ projectId })
+        });
+        
+        if (!res.ok) throw new Error('Evolution failed. See server logs.');
+        const evolvedData = await res.json();
+        
+        resContainer.style.display = 'block';
+        resContainer.innerHTML = `
+          <h4 style="color: #2e7d32; margin-bottom: 8px; font-weight: 800; font-size: 1.1rem;">✨ Version 2.0 Generated ✨</h4>
+          <p style="margin-bottom: 8px;"><strong>Problem:</strong> ${evolvedData.problemStatement}</p>
+          <p style="margin-bottom: 8px;"><strong>Solution:</strong> ${evolvedData.solution}</p>
+          <hr style="border: 1px solid #ccc; margin: 12px 0;">
+          <p style="font-size: 0.85rem;"><strong>Analysis:</strong> ${evolvedData.llmResponse.startup_type} | Risk: ${evolvedData.llmResponse.risk_level}</p>
+          <button class="brutal-btn small" style="margin-top: 12px; background: #fff;" onclick="loadToPitch('${evolvedData.problemStatement.replace(/'/g, "\\'")}', '${evolvedData.solution.replace(/'/g, "\\'")}')">Load back into Pitch Tool</button>
+        `;
+
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "🌟 Evolve Prototype";
+        loader.style.display = 'none';
+        
+        // Refresh the list slightly later to show new entry safely at top
+        setTimeout(() => fetchWatchlist(), 6000);
+      }
+    }
+
+    function loadToPitch(problem, solution) {
+      document.getElementById('inProblem').value = problem;
+      document.getElementById('inSolution').value = solution;
+      toggleWatchlist(); // Auto-switch back to pitch screen
     }
   </script>
 

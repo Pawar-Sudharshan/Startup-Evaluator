@@ -338,3 +338,81 @@ YOU MUST WRITE EXACTLY 3 SHORT PARAGRAPHS (MAXIMUM 250 WORDS TOTAL) of profound,
   await delay(1500);
   return { feedback: `Impact summary: ${decision} executed. Remaining budget/funding is $${newState.budget}.` };
 };
+
+export const evolveStartup = async (problem, solution, previousAnalysis, mode = "business") => {
+  const isNGO = mode === 'nonprofit';
+  console.log(`🤖 Evolving Startup Pitch...`);
+  
+  const openai = getClient();
+  if (openai) {
+    try {
+      const systemPrompt = isNGO 
+        ? `You are a brilliant NGO incubator. You will receive an old NGO pitch and its previous evaluation.
+Your goal is to EVOLVE this pitch into a much stronger Version 2.0 that directly addresses the documented weaknesses and suggestions.
+Return the exact JSON schema:
+{
+  "new_problem": "String - A more refined, specific problem statement",
+  "new_solution": "String - A stronger, more viable solution",
+  "analysis": {
+    "startup_type": "string",
+    "risk_level": "low" | "medium" | "high",
+    "growth_potential": "low" | "medium" | "high",
+    "competition": "low" | "medium" | "high",
+    "mission_alignment_score": number (0-100),
+    "efficiency_score": number (0-100),
+    "weaknesses": ["string"],
+    "suggestions": ["string"]
+  }
+}`
+        : `You are a top-tier startup accelerator (like Y-Combinator). You will receive an old pitch and its previous evaluation.
+Your goal is to PIVOT and EVOLVE this pitch into a much stronger Version 2.0 that directly addresses the documented weaknesses and suggestions from the previous analysis. Make the idea punchier, more scalable, and less risky.
+Return the exact JSON schema:
+{
+  "new_problem": "String - A more refined, specific problem statement",
+  "new_solution": "String - A stronger, more viable solution",
+  "analysis": {
+    "startup_type": "string",
+    "risk_level": "low" | "medium" | "high",
+    "growth_potential": "low" | "medium" | "high",
+    "competition": "low" | "medium" | "high",
+    "idea_clarity_score": number (0-100),
+    "market_fit_score": number (0-100),
+    "weaknesses": ["string"],
+    "suggestions": ["string"]
+  }
+}`;
+
+      const completion = await openai.chat.completions.create({
+        model: "openai/gpt-4o-mini",
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: systemPrompt },
+          {
+            role: "user",
+            content: `OLD PROBLEM: ${problem}\nOLD SOLUTION: ${solution}\nPREVIOUS ANALYSIS: ${JSON.stringify(previousAnalysis)}`
+          }
+        ]
+      });
+      return JSON.parse(completion.choices[0].message.content);
+    } catch (err) {
+      console.error("OpenAI Error, falling back to mock:", err.message);
+    }
+  }
+
+  // --- MOCK FALLBACK ---
+  await delay(1500);
+  return {
+    new_problem: problem + " (Refined for specifically targeted niche audiences)",
+    new_solution: solution + " (Now featuring an AI-driven core for scale)",
+    analysis: {
+      startup_type: isNGO ? "NGO" : "SaaS",
+      risk_level: "low",
+      growth_potential: "high",
+      competition: "medium",
+      idea_clarity_score: 95,
+      market_fit_score: 90,
+      weaknesses: ["Still relies on heavy outbound marketing"],
+      suggestions: ["Focus on virality loops"]
+    }
+  };
+};
