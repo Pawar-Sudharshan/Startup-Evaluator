@@ -1,0 +1,15 @@
+{
+  "name": "startup-evaluator",
+  "version": "1.0.0",
+  "description": "Startup Evaluator full project",
+  "scripts": {
+    "install:backend": "cd backend && npm install",
+    "postinstall": "npm run install:backend",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npx -y serve",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

@@ -5,50 +5,39 @@ This document details the steps required to run the "Startup Evaluator" project 
 ## Prerequisites
 - Node.js installed
 
-## 1. Running the Backend
+## 1. Environment Setup
 
-The backend is built with Node.js and Express. It powers the AI evaluations.
-
+Before starting the application, configure your environment variables. 
+Create a `.env` file inside the `backend` folder:
 ```bash
-# Navigate to the backend directory
-cd backend
+PORT=8080
+OPENAI_API_KEY=your_actual_openai_api_key_here
+```
 
-# Install dependencies
+## 2. Running Local Development (Recommended)
+
+Thanks to a root-level `package.json` configuration, you can now run both the backend and frontend simultaneously with a single command. 
+
+From the **project root directory**:
+```bash
+# Install root dependencies (which also installs backend dependencies automatically)
 npm install
 
-# Start the development server
+# Start both backend and frontend servers
 npm start
 ```
-By default, the backend will start on **port 8080**. You should see the message `Server is running on port 8080`.
+This will start:
+- **Backend API:** internally on port 8080
+- **Frontend App:** typically on port 3000
 
-**Note:** Ensure your `backend/.env` file contains your OpenRouter/OpenAI API key. An example configuration looks like this:
-```
-PORT=8080
-OPENAI_API_KEY=sk-or-v1-...
-```
+Open the provided frontend localhost link (usually `http://localhost:3000`) in your web browser.
 
-## 2. Running the Frontend
+## 3. Alternative Ways to Run
 
-The frontend is a lightweight, static client composed of an `index.html` file. You do not need Node.js to run the frontend; a basic HTTP server will suffice.
-
-### Option A: Using `npx serve` (Recommended)
-If you have Node.js installed, the easiest way to serve the frontend folder is:
-```bash
-# Navigate to the frontend directory
-cd frontend
-
-# Serve the frontend directory
-npx serve
-```
-Then, open the provided localhost link (usually `http://localhost:3000`) in your web browser.
-
-### Option B: VS Code Live Server
-1. Open the project in VS Code.
-2. Install the **Live Server** extension.
-3. Right-click on `frontend/index.html` and select **"Open with Live Server"**.
-
-### Option C: Direct File Execution
-You can simply open `frontend/index.html` directly in your favorite web browser (e.g., Chrome, Edge) by double-clicking it. The app relies on your locally running backend API.
+If you prefer to run them separately:
+1. **Backend:** `cd backend`, then run `npm start`
+2. **Frontend:** `cd frontend`, then run `npx serve`
+You can also run the frontend by opening the `frontend/index.html` file using VS Code Live Server or by double-clicking it directly in an unsupported environment, though local basic HTTP serving is recommended.
 
 ## Usage
-Once both the backend and frontend are running, you can fill out your startup's problem, solution, target audience, and initial budget on the main dashboard to evaluate your business or non-profit idea.
+Once both the backend and frontend are running, open the frontend link in your browser. You can then fill out your startup's problem, solution, target audience, and initial budget on the main dashboard to evaluate your business or non-profit idea.

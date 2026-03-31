@@ -15,7 +15,7 @@ const getClient = () => {
 };
 
 export const analyzeStartup = async (startupData) => {
-  const { problem, solution, target_users, budget, mode } = startupData;
+  const { problem, solution, target_users, budget, mode, stage, team_capability, monetization } = startupData;
   const isNGO = mode === 'nonprofit';
   console.log(`🤖 Analyzing (Mode: ${mode || 'business'})... [Key provided: ${!!process.env.OPENAI_API_KEY}]`);
 
@@ -53,7 +53,7 @@ export const analyzeStartup = async (startupData) => {
           { role: "system", content: systemPrompt },
           {
             role: "user",
-            content: `Problem: ${problem}\nSolution: ${solution}\nTarget Community: ${target_users}\nInitial Funding: $${budget}`
+            content: `Problem: ${problem}\nSolution: ${solution}\nTarget Community: ${target_users}\nInitial Funding: $${budget}\nCurrent Stage: ${stage || 'Not specified'}\nTeam Capability: ${team_capability || 'Not specified'}\nMonetization/Funding Model: ${monetization || 'Not specified'}`
           }
         ]
       });
@@ -103,13 +103,16 @@ Generate a realistic monthly curveball or opportunity for an NGO described as:
 Problem: ${currentState.pitch?.problem}
 Solution: ${currentState.pitch?.solution}
 Target Demographic: ${currentState.pitch?.target_users}
+Stage: ${currentState.pitch?.stage || 'Idea'}
+Team: ${currentState.pitch?.team_capability || 'Solo'}
+Funding Model: ${currentState.pitch?.monetization || 'Donations'}
 
 The difficulty setting is: ${difficultyLevel}. Tailor the severity of the scenario to this tier.
 
 CRITICAL INSTRUCTION: You MUST generate EXACTLY 5 choices for the user to pick from. 
-- 2 choices must be structurally sound (more Pros than Cons).
+- 2 choices must be structurally sound, representing safe, thoughtful leadership (more Pros than Cons).
 - 1 choice must be a true compromise (equal Pros and Cons).
-- 2 choices must be highly risky, flawed, or negligent (more Cons than Pros) to allow the user a 'trap' option.
+- 2 choices MUST be deceptive "trap" options: these should sound like highly attractive 'quick wins' or completely reasonable actions, but secretly carry massive hidden risks, create severe long-term debt, or completely fail to address the root problem.
 
 Do NOT wrap the scenario string in internal quotation marks. Output JSON exactly like this:
 {
@@ -128,13 +131,16 @@ Generate a realistic monthly market shift, product failure, or competitor action
 Problem: ${currentState.pitch?.problem}
 Solution: ${currentState.pitch?.solution}
 Target Users: ${currentState.pitch?.target_users}
+Stage: ${currentState.pitch?.stage || 'Idea'}
+Team: ${currentState.pitch?.team_capability || 'Solo'}
+Revenue Model: ${currentState.pitch?.monetization || 'Subscription'}
 
 The difficulty setting is: ${difficultyLevel}. Tailor the severity of the scenario to this tier.
 
 CRITICAL INSTRUCTION: You MUST generate EXACTLY 5 choices for the user to pick from. 
-- 2 choices must be structurally sound (more Pros than Cons).
+- 2 choices must be structurally sound, representing safe, thoughtful leadership (more Pros than Cons).
 - 1 choice must be a true compromise (equal Pros and Cons).
-- 2 choices must be highly risky, flawed, or negligent (more Cons than Pros) to allow the user a 'trap' option.
+- 2 choices MUST be deceptive "trap" options: these should sound like highly attractive 'quick wins' or completely reasonable actions, but secretly carry massive hidden risks, create severe long-term debt, or completely fail to address the root problem.
 
 Do NOT wrap the scenario string in internal quotation marks. Output JSON exactly like this:
 {
@@ -286,27 +292,28 @@ export const generateFeedback = async (previousState, decision, newState, feedba
       let instructionText = isNGO
         ? `You are an empathetic NGO advisor evaluating an intervention for (${newState.pitch?.solution}). Evaluate their decision focusing on human impact and community trust.
 SENTIMENT RUBRIC:
-- "positive": The decision was highly effective, yielding strong community impact or funding without extreme risk.
-- "neutral": The decision was a standard trade-off (e.g. burned funding but gained equal trust).
-- "negative": The decision was a catastrophe—negligent, unnecessarily risky, or alienated the community. Do not sugarcoat failures.
+- "positive": The decision was highly effective and thoughtful, yielding strong community impact or funding without extreme risk.
+- "neutral": The decision was a perfectly balanced trade-off (e.g. burned funding but gained equal trust).
+- "negative": Use this frequently for ANY decision that resulted in a net loss, fell for a "quick win" trap, took on too much risk, burned budget without adequate gain, or had hidden negative consequences. Even slight setbacks or naive mistakes MUST be marked as "negative". Keep the feedback fair and constructive.
 
 YOU MUST WRITE EXACTLY 3 SHORT PARAGRAPHS (MAXIMUM 250 WORDS TOTAL) of incredibly immersive, vivid elaboration detailing exactly how this decision plays out on the ground. Use line breaks between paragraphs. Offer actionable strategic suggestions. Output JSON strictly: { "feedback": "...", "suggestions": ["string"], "sentiment": "positive" | "neutral" | "negative" }`
         : `You are a realistic, objective tech startup investor giving feedback to a founder.
 The startup's Problem: "${newState.pitch?.problem}"
 The startup's Solution: "${newState.pitch?.solution}"
+Stage: "${newState.pitch?.stage || 'Idea'}", Revenue Model: "${newState.pitch?.monetization || 'Subscription'}"
 
 CRITICAL RULE: Do NOT use generic startup buzzwords. You MUST explicitly tether the feedback to the specific Problem and Solution above.
 SENTIMENT RUBRIC:
-- "positive": The decision was highly effective, yielding strong users/retention or securing runway without extreme risk.
-- "neutral": The decision was a standard trade-off (e.g. burned budget but gained equal users).
-- "negative": The decision was a catastrophe—strategically ignorant, unnecessarily risky, or stalled growth entirely. Do not sugarcoat failures.
+- "positive": The decision was highly effective and thoughtful, yielding strong users/retention or securing runway without extreme risk.
+- "neutral": The decision was a perfectly balanced trade-off (e.g. burned budget but gained equal users).
+- "negative": Use this frequently for ANY decision that resulted in a net loss, fell for a "quick win" trap, took on too much risk, burned runway without validation, or had hidden negative consequences. Even slight setbacks or naive mistakes MUST be marked as "negative". Keep the feedback fair and actionable.
 
 YOU MUST WRITE EXACTLY 3 SHORT PARAGRAPHS (MAXIMUM 250 WORDS TOTAL) of profound, vivid strategic elaboration outlining the consequences of their decision. Use line breaks between paragraphs. Offer actionable suggestions tailored exactly to their product. Output strictly as JSON: { "feedback": "...", "suggestions": ["string"], "sentiment": "positive" | "neutral" | "negative" }`;
       
       if(feedbackType === "summarize") {
         instructionText = isNGO
-          ? `You are an empathetic NGO advisor. Summarize the operational impact of the decision in ONE profound sentence. Apply the SENTIMENT RUBRIC (positive=effective, neutral=trade-off, negative=catastrophe). Output JSON strictly: { "feedback": "One sentence summary", "suggestions": ["string"], "sentiment": "positive" | "neutral" | "negative" }`
-          : `You are an objective tech startup investor. Summarize the outcome in ONE concise, punchy sentence detailing the exact trade-off. Apply the SENTIMENT RUBRIC (positive=effective, neutral=trade-off, negative=catastrophe). Output JSON strictly: { "feedback": "One sentence summary", "suggestions": ["string"], "sentiment": "positive" | "neutral" | "negative" }`;
+          ? `You are an empathetic NGO advisor. Summarize the operational impact of the decision in ONE profound sentence. Apply the SENTIMENT RUBRIC (positive=effective, neutral=trade-off, negative=setback). Output JSON strictly: { "feedback": "One sentence summary", "suggestions": ["string"], "sentiment": "positive" | "neutral" | "negative" }`
+          : `You are an objective tech startup investor. Summarize the outcome in ONE concise, punchy sentence detailing the exact trade-off. Apply the SENTIMENT RUBRIC (positive=effective, neutral=trade-off, negative=setback). Output JSON strictly: { "feedback": "One sentence summary", "suggestions": ["string"], "sentiment": "positive" | "neutral" | "negative" }`;
       }
 
       const stateContext = isNGO 
