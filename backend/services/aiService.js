@@ -116,16 +116,16 @@ CRITICAL INSTRUCTION: You MUST generate EXACTLY 5 choices for the user to pick f
 
 Do NOT wrap the scenario string in internal quotation marks. Output JSON exactly like this:
 {
-  "scenario": "A detailed, deeply engaging 4-sentence paragraph describing the specific monthly events...",
+  "scenario": "A detailed, deeply engaging 6-8 sentence narrative paragraph describing the specific monthly events, obstacles, and atmosphere on the ground...",
   "tier": "${difficultyLevel}",
   "choices": [
-    { "action": "String describing the first sound option" },
-    { "action": "String describing the second sound option" },
-    { "action": "String describing the neutral compromise" },
-    { "action": "String describing the first highly risky/negative option" },
-    { "action": "String describing the second highly risky/negative option" }
+    { "action": "String (min 15 words) describing the first sound option" },
+    { "action": "String (min 15 words) describing the second sound option" },
+    { "action": "String (min 15 words) describing the neutral compromise" },
+    { "action": "String (min 15 words) describing the first highly risky/negative option" },
+    { "action": "String (min 15 words) describing the second highly risky/negative option" }
   ]
-}`
+} (Output must be immersive, professional, and long-form narrative.)`
         : `You are a realistic simulation engine for a Tech Startup.
 Generate a realistic monthly market shift, product failure, or competitor action for a startup described as:
 Problem: ${currentState.pitch?.problem}
@@ -144,16 +144,16 @@ CRITICAL INSTRUCTION: You MUST generate EXACTLY 5 choices for the user to pick f
 
 Do NOT wrap the scenario string in internal quotation marks. Output JSON exactly like this:
 {
-  "scenario": "A highly detailed, engaging 4-sentence paragraph describing the specific monthly market shift...",
+  "scenario": "A highly detailed, engaging 6-8 sentence narrative paragraph describing the specific monthly market shift, product failure, or competitor action in vivid detail...",
   "tier": "${difficultyLevel}",
   "choices": [
-    { "action": "String describing the first sound option" },
-    { "action": "String describing the second sound option" },
-    { "action": "String describing the neutral compromise" },
-    { "action": "String describing the first highly risky/negative option" },
-    { "action": "String describing the second highly risky/negative option" }
+    { "action": "String (min 15 words) describing the first sound option" },
+    { "action": "String (min 15 words) describing the second sound option" },
+    { "action": "String (min 15 words) describing the neutral compromise" },
+    { "action": "String (min 15 words) describing the first highly risky/negative option" },
+    { "action": "String (min 15 words) describing the second highly risky/negative option" }
   ]
-}`;
+} (Output must be immersive, critical, and long-form narrative.)`;
 
       const stateContext = isNGO 
         ? `Current State (Month ${currentState.month}): Funding $${currentState.budget}, Lives Impacted: ${currentState.users}, Ops Risk: ${currentState.risk}%, Community Trust: ${currentState.retention}%.`
@@ -162,6 +162,7 @@ Do NOT wrap the scenario string in internal quotation marks. Output JSON exactly
       const completion = await openai.chat.completions.create({
         model: "openai/gpt-4o-mini",
         response_format: { type: "json_object" },
+        max_tokens: 2048,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: stateContext }
@@ -252,6 +253,7 @@ Output JSON strictly conforming to the exact schema with your simulated integer 
       const completion = await openai.chat.completions.create({
         model: "openai/gpt-4o-mini",
         response_format: { type: "json_object" },
+        max_tokens: 2048,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: stateContext }
@@ -296,7 +298,7 @@ SENTIMENT RUBRIC:
 - "neutral": The decision was a perfectly balanced trade-off (e.g. burned funding but gained equal trust).
 - "negative": Use this frequently for ANY decision that resulted in a net loss, fell for a "quick win" trap, took on too much risk, burned budget without adequate gain, or had hidden negative consequences. Even slight setbacks or naive mistakes MUST be marked as "negative". Keep the feedback fair and constructive.
 
-YOU MUST WRITE EXACTLY 3 SHORT PARAGRAPHS (MAXIMUM 250 WORDS TOTAL) of incredibly immersive, vivid elaboration detailing exactly how this decision plays out on the ground. Use line breaks between paragraphs. Offer actionable strategic suggestions. Output JSON strictly: { "feedback": "...", "suggestions": ["string"], "sentiment": "positive" | "neutral" | "negative" }`
+YOU MUST WRITE EXACTLY 3 SUBSTANTIAL PARAGRAPHS (MINIMUM 350 WORDS TOTAL) of incredibly immersive, vivid elaboration detailing exactly how this decision plays out on the ground. Use line breaks between paragraphs. Offer actionable strategic suggestions. Output JSON strictly: { "feedback": "...", "suggestions": ["string"], "sentiment": "positive" | "neutral" | "negative" } (Ensure feedback is very long, detailed and high quality)`
         : `You are a realistic, objective tech startup investor giving feedback to a founder.
 The startup's Problem: "${newState.pitch?.problem}"
 The startup's Solution: "${newState.pitch?.solution}"
@@ -308,7 +310,7 @@ SENTIMENT RUBRIC:
 - "neutral": The decision was a perfectly balanced trade-off (e.g. burned budget but gained equal users).
 - "negative": Use this frequently for ANY decision that resulted in a net loss, fell for a "quick win" trap, took on too much risk, burned runway without validation, or had hidden negative consequences. Even slight setbacks or naive mistakes MUST be marked as "negative". Keep the feedback fair and actionable.
 
-YOU MUST WRITE EXACTLY 3 SHORT PARAGRAPHS (MAXIMUM 250 WORDS TOTAL) of profound, vivid strategic elaboration outlining the consequences of their decision. Use line breaks between paragraphs. Offer actionable suggestions tailored exactly to their product. Output strictly as JSON: { "feedback": "...", "suggestions": ["string"], "sentiment": "positive" | "neutral" | "negative" }`;
+YOU MUST WRITE EXACTLY 3 SUBSTANTIAL PARAGRAPHS (MINIMUM 350 WORDS TOTAL) of profound, vivid strategic elaboration outlining the consequences of their decision. Use line breaks between paragraphs. Offer actionable suggestions tailored exactly to their product. Output strictly as JSON: { "feedback": "...", "suggestions": ["string"], "sentiment": "positive" | "neutral" | "negative" } (Ensure feedback is very long, detailed and high quality)`;
       
       if(feedbackType === "summarize") {
         instructionText = isNGO
@@ -323,6 +325,7 @@ YOU MUST WRITE EXACTLY 3 SHORT PARAGRAPHS (MAXIMUM 250 WORDS TOTAL) of profound,
       const completion = await openai.chat.completions.create({
         model: "openai/gpt-4o-mini",
         response_format: { type: "json_object" },
+        max_tokens: 2048,
         messages: [
           { role: "system", content: instructionText },
           { role: "user", content: stateContext }
@@ -385,6 +388,7 @@ Return the exact JSON schema:
       const completion = await openai.chat.completions.create({
         model: "openai/gpt-4o-mini",
         response_format: { type: "json_object" },
+        max_tokens: 2048,
         messages: [
           { role: "system", content: systemPrompt },
           {
