@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Startup Evaluator - Neo-Brutalist Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
@@ -417,8 +418,8 @@
 
     <!-- Centered Authentication Action Buttons -->
     <div style="display: flex; gap: 24px; justify-content: center; margin-bottom: 60px;">
-      <button class="brutal-btn" onclick="openAuth('signIn')" style="background: var(--primary); padding: 16px 32px; font-size: 1.25rem;">🔑 Log In</button>
-      <button class="brutal-btn" onclick="openAuth('signUp')" style="background: var(--accent); padding: 16px 32px; font-size: 1.25rem;">🚀 Sign Up / Join</button>
+      <button class="brutal-btn" onclick="openAuth('signIn')" style="background: var(--primary); padding: 16px 32px; font-size: 1.25rem;"><i class="bi bi-key-fill"></i> Log In</button>
+      <button class="brutal-btn" onclick="openAuth('signUp')" style="background: var(--accent); padding: 16px 32px; font-size: 1.25rem;"><i class="bi bi-rocket-takeoff-fill"></i> Sign Up / Join</button>
     </div>
 
     <!-- Centered Auth Frame directly replacing the Hero -->
@@ -443,16 +444,16 @@
 
     <!-- STEP 2: Main Dashboard Buttons Grid -->
     <div class="top-controls" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; margin-bottom: 40px; border: 3px solid #000; padding: 24px; background: #fafafa; box-shadow: 8px 8px 0px #000;">
-        <button id="modeBusiness" class="brutal-action-btn" style="background: var(--primary); flex: 1 1 22%;" onclick="setMode('business')">🏢 Business Iteration</button>
-        <button id="modeNonprofit" class="brutal-action-btn" style="background: #e0b0ff; flex: 1 1 22%;" onclick="setMode('nonprofit')">🤝 Non-Profit Sector</button>
-        <button class="brutal-action-btn" style="background: var(--accent); flex: 1 1 22%;" onclick="toggleWatchlist()">📜 View Watchlist</button>
-        <button class="brutal-action-btn" style="background: #fff; flex: 1 1 22%;" onclick="toggleLog()">🖥️ AI Console</button>
+        <button id="modeBusiness" class="brutal-action-btn" style="background: var(--primary); flex: 1 1 22%;" onclick="setMode('business')"><i class="bi bi-building-fill"></i> Business Iteration</button>
+        <button id="modeNonprofit" class="brutal-action-btn" style="background: #e0b0ff; flex: 1 1 22%;" onclick="setMode('nonprofit')"><i class="bi bi-people-fill"></i> Non-Profit Sector</button>
+        <button class="brutal-action-btn" style="background: var(--accent); flex: 1 1 22%;" onclick="toggleWatchlist()"><i class="bi bi-journal-text"></i> View Watchlist</button>
+        <button class="brutal-action-btn" style="background: #fff; flex: 1 1 22%;" onclick="toggleLog()"><i class="bi bi-terminal-fill"></i> AI Console</button>
     </div>
 
     <!-- Watchlist Section -->
     <div id="watchlistSection" class="brutal-card" style="display: none; background: var(--secondary)">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <h2>📜 My Startup Watchlist (Max 10)</h2>
+        <h2><i class="bi bi-journal-text"></i> My Startup Watchlist (Max 10)</h2>
         <button class="brutal-btn small" onclick="toggleWatchlist()">Back to Pitch</button>
       </div>
       <div id="watchlist-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
@@ -489,7 +490,7 @@
       <div style="margin-bottom: 16px;">
         <details
           style="cursor: pointer; background: #fff; border: 3px solid var(--main-black); padding: 12px; box-shadow: 4px 4px 0px var(--main-black);">
-          <summary style="font-weight: bold; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase;">➕ Add
+          <summary style="font-weight: bold; margin-bottom: 8px; font-size: 0.95rem; text-transform: uppercase;"><i class="bi bi-plus-lg"></i> Add
             Optional Context (Improves AI Analysis)</summary>
           <div style="display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 150px;">
@@ -537,9 +538,9 @@
         <h2>2. Live Dashboard — Month <span id="monthHeading">1</span> (<span id="startupTypeHeading"></span>)</h2>
         <div style="display: flex; gap: 8px;">
           <button id="saveToWatchlistBtn" class="brutal-btn small" style="background: var(--primary); display: none;" onclick="saveToWatchlist()">Save to Watchlist</button>
-          <button class="brutal-btn small" style="background: var(--accent);" onclick="openEvolutionTimeline()">🕰 View
+          <button class="brutal-btn small" style="background: var(--accent);" onclick="openEvolutionTimeline()"><i class="bi bi-clock-history"></i> View
             Evolution</button>
-          <button class="brutal-btn small" style="background: var(--success);" onclick="exportData()">📥 Export
+          <button class="brutal-btn small" style="background: var(--success);" onclick="exportData()"><i class="bi bi-download"></i> Export
             Log</button>
         </div>
       </div>
@@ -564,7 +565,7 @@
         </select>
         <button class="brutal-btn" onclick="fetchScenario()">Generate Next Scenario</button>
         <button class="brutal-btn" style="background: #fff; color: var(--main-black);"
-          onclick="toggleRefinementPanel()">✍️ Refine Pitch</button>
+          onclick="toggleRefinementPanel()"><i class="bi bi-pencil-square"></i> Refine Pitch</button>
         <span id="loaderScenario" class="brutal-spinner-square"></span>
       </div>
 
@@ -592,7 +593,7 @@
     <!-- Scenario / Challenge Section -->
     <div id="scenarioSection" class="brutal-card" style="background: var(--primary)">
       <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-        <h2>3. Monthly Challenge 🚨</h2>
+        <h2>3. Monthly Challenge <i class="bi bi-exclamation-triangle-fill"></i></h2>
         <span id="scenarioTierBadge" class="tier-badge" style="display:none;"></span>
       </div>
       <p id="scenarioText" style="font-size: 1.1rem; margin: 16px 0; white-space: pre-wrap; line-height: 1.6;"></p>
@@ -604,7 +605,7 @@
       <!-- Consequences / Metric Differences -->
       <div id="metricChanges"
         style="display: none; margin-top: 24px; padding: 16px; background: #fff; border: 3px dashed var(--main-black);">
-        <h3 style="margin-bottom: 12px; text-transform: uppercase;">📊 Outcomes</h3>
+        <h3 style="margin-bottom: 12px; text-transform: uppercase;"><i class="bi bi-bar-chart-fill"></i> Outcomes</h3>
         <div id="metricChangesList" style="display: flex; gap: 12px; flex-wrap: wrap;"></div>
       </div>
 
@@ -618,18 +619,18 @@
       <!-- Undo Options -->
       <div id="undoOptions" style="display: none; margin-top: 24px;">
         <div style="padding: 12px; border: 2px dashed var(--danger); background: #ffebee; margin-bottom: 12px;">
-          <strong>⚠️ Critical Outcome Detected.</strong> The board / community reacted poorly. You have the option to
+          <strong><i class="bi bi-exclamation-octagon-fill"></i> Critical Outcome Detected.</strong> The board / community reacted poorly. You have the option to
           rewind time.
         </div>
-        <button class="brutal-btn" style="background: var(--danger); color: white;" onclick="undoDecision()">⏪ Rewind &
+        <button class="brutal-btn" style="background: var(--danger); color: white;" onclick="undoDecision()"><i class="bi bi-rewind-fill"></i> Rewind &
           Try Again</button>
       </div>
 
       <!-- After selection, options to get feedback -->
       <div id="feedbackOptions" style="display: none; margin-top: 24px; gap: 16px; align-items: center;">
-        <button class="brutal-btn" style="background: #fff;" onclick="getFeedback('explain')">🤖 Detailed
+        <button class="brutal-btn" style="background: #fff;" onclick="getFeedback('explain')"><i class="bi bi-robot"></i> Detailed
           Summary</button>
-        <button class="brutal-btn" style="background: var(--success);" onclick="getFeedback('summarize')">🤖 Quick
+        <button class="brutal-btn" style="background: var(--success);" onclick="getFeedback('summarize')"><i class="bi bi-robot"></i> Quick
           Summary</button>
         <span id="loaderChoice" class="brutal-spinner-square"></span>
       </div>
@@ -1344,7 +1345,7 @@ ${document.getElementById('scenarioText').innerText}${suggestionsText}`;
               </div>
               
               <div style="display: flex; gap: 12px; align-items: center;">
-                <button class="brutal-btn small" style="background: var(--primary); font-size: 1rem; padding: 12px 24px;" onclick="evolveProject('${p._id}')" id="btn-evolve-${p._id}">🌟 Evolve Prototype</button>
+                <button class="brutal-btn small" style="background: var(--primary); font-size: 1rem; padding: 12px 24px;" onclick="evolveProject('${p._id}')" id="btn-evolve-${p._id}"><i class="bi bi-stars"></i> Evolve Prototype</button>
                 <span id="loader-evolve-${p._id}" class="brutal-spinner-square" style="display: none; width: 16px; height: 16px;"></span>
               </div>
               
@@ -1413,7 +1414,7 @@ ${document.getElementById('scenarioText').innerText}${suggestionsText}`;
     <div class="modal-content">
       <h2
         style="margin-bottom: 16px; border-bottom: 4px solid var(--main-black); padding-bottom: 8px; text-transform: uppercase;">
-        🕰 Startup Evolution History</h2>
+        <i class="bi bi-clock-history"></i> Startup Evolution History</h2>
       <div id="timelineContainer"></div>
       <button class="brutal-btn" style="margin-top: 24px; background: var(--main-black); color: white;"
         onclick="closeEvolutionTimeline()">Close Timeline</button>
@@ -1470,7 +1471,7 @@ ${document.getElementById('scenarioText').innerText}${suggestionsText}`;
         // Step 4: Add User Name to Header dynamically
         const fnameSpan = document.getElementById("clerk-first-name");
         if (fnameSpan && window.Clerk.user.firstName) {
-            fnameSpan.innerText = `👋, ${window.Clerk.user.firstName}`;
+            fnameSpan.innerHTML = `<i class="bi bi-emoji-smile-fill"></i>, ${window.Clerk.user.firstName}`;
         }
       }
 
