@@ -5,8 +5,14 @@ import mongoose from 'mongoose';
 import { clerkMiddleware } from '@clerk/express';
 import startupRoutes from './routes/startupRoutes.js';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -17,12 +23,21 @@ app.use(cors());
 app.use(express.json());
 app.use(clerkMiddleware());
 
+// Static Files - Serve frontend from the sibling directory
+const frontendPath = path.join(__dirname, '../frontend');
+app.use(express.static(frontendPath));
+
 // Routes
 app.use('/api', startupRoutes);
 
 // Basic health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Startup AI Simulator Backend is running' });
+});
+
+// Catch-all for Frontend - Final middleware
+app.use((req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // Error handling middleware
