@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>startWise - Grow Intelligently</title>
+    <!-- Modern Typography: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #005f73; /* Teal/dark-blue */
+            --cta-color: #0a9396; /* Vibrant blue-green */
+            --cta-hover: #008184;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-color: #ffffff;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            /* SVG stylized brain/rocket placeholder */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23005f73"><path d="M12 2.5a5.5 5.5 0 0 1 3.096 10.047 9.005 9.005 0 0 1 5.9 8.181.5.5 0 0 1-.496.522H3.5a.5.5 0 0 1-.496-.522 9.005 9.005 0 0 1 5.9-8.181A5.5 5.5 0 0 1 12 2.5zM12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm0 10a7.5 7.5 0 0 0-7.46 6.75h14.92A7.5 7.5 0 0 0 12 14z"/></svg>');
+            background-size: cover;
+        }
+
+        .logo-text {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            letter-spacing: -0.02em;
+        }
+        
+        .logo-text span.start {
+            font-weight: 500;
+        }
+        
+        .logo-text span.wise {
+            font-weight: 800;
+        }
+
+        .header-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .btn-primary {
+            background-color: var(--cta-color);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 12px 28px;
+            border-radius: 6px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--cta-hover);
+            transform: translateY(-1px);
+        }
+
+        .clerk-text {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .clerk-text::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%236b7280"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        /* Explainer Section */
+        .explainer {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            padding-top: 60px;
+        }
+
+        .explainer h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 24px;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .explainer p.intro {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        .explainer h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+        }
+
+        .explainer p.body-text {
+            font-size: 1.125rem;
+            color: var(--text-light);
+            margin-bottom: 40px;
+        }
+
+        /* Neo-Brutalist Accordion Styles */
+        .brutal-accordion {
+            width: 100%;
+            max-width: 500px;
+            margin: 40px auto 100px;
+            text-align: left;
+        }
+        
+        .accordion-item {
+            border: 3px solid var(--text-dark);
+            box-shadow: 6px 6px 0px var(--text-dark);
+            background: white;
+            margin-bottom: 24px;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .accordion-item:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 8px 8px 0px var(--text-dark);
+        }
+        
+        .accordion-header {
+            width: 100%;
+            padding: 20px;
+            background: #FFDE59; /* Yellow brutalist */
+            border: none;
+            border-bottom: 0px solid var(--text-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s ease, color 0.2s;
+        }
+        
+        .accordion-header.signup {
+            background: #00E5FF; /* Cyan brutalist */
+        }
+        
+        .accordion-header.active {
+            border-bottom: 3px solid var(--text-dark);
+        }
+        
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.5rem;
+        }
+        
+        .accordion-header.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #fff;
+        }
+        
+        .accordion-body {
+            padding: 24px;
+            background: #fafafa;
+        }
+
+        .brutal-form-group {
+            margin-bottom: 16px;
+        }
+
+        .brutal-label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--text-dark);
+        }
+
+        .brutal-input {
+            width: 100%;
+            padding: 12px;
+            border: 3px solid var(--text-dark);
+            background: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .brutal-input:focus {
+            outline: none;
+            background: #fdfdfd;
+        }
+
+        .brutal-submit {
+            width: 100%;
+            background: var(--text-dark);
+            color: #fff;
+            font-weight: 700;
+            padding: 14px;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 8px;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+        }
+
+        .brutal-submit:hover {
+            background: #333;
+        }
+        
+        .small-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            justify-content: center;
+            border-bottom: 2px dashed var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .footer-nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .footer-nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .social-icons a {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background-color: var(--text-light);
+            border-radius: 50%;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .credit {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .credit strong {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER -->
+        <header>
+            <a href="#" class="logo-container">
+                <div class="logo-icon"></div>
+                <div class="logo-text"><span class="start">start</span><span class="wise">Wise</span></div>
+            </a>
+            
+            <div class="header-actions">
+                <button class="btn-primary" onclick="document.querySelector('.accordion-header').click()">Sign Up</button>
+                <span class="clerk-text">Secure Sign-in with Clerk</span>
+            </div>
+        </header>
+
+        <!-- EXPLAINER SECTION -->
+        <section class="explainer">
+            <h1>Empowering Social Innovation & Purpose-Driven Entrepreneurship</h1>
+            <p class="intro">Scattered tasks, lack of impact metrics, and disconnected core teams are challenges that derail social startups. Move beyond traditional business metrics and start building scalable, sustainable innovation.</p>
+            
+            <h2>Discover startWise</h2>
+            <p class="body-text">
+                Your intelligent co-founder and complete platform for streamlining processes, fostering team synergy, and accelerating wise decisions. We consolidate tasks, connect teams, provide real-time insights, and automate busy work, empowering you and your team to focus on what truly matters: building your wisest future, from the ground up. Stop firefighting and start building with startWise today.
+            </p>
+
+            <!-- AUTH ACCORDION (Neo-Brutalist) -->
+            <div class="brutal-accordion">
+                <!-- Login Item -->
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>🔑 Log In to Evaluate</span>
+                        <span class="accordion-icon">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="small-logo">
+                                <div class="logo-icon" style="width:24px; height:24px;"></div>
+                                <div class="logo-text" style="font-size: 1.25rem;"><span class="start">start</span><span class="wise">Wise</span></div>
+                            </div>
+                            <div class="brutal-form-group">
+                                <label class="brutal-label">Email Address</label>
+                                <input type="email" class="brutal-input" placeholder="founder@startup.com">
+                            </div>
+                            <div class="brutal-form-group">
+                                <label class="brutal-label">Password</label>
+                                <input type="password" class="brutal-input" placeholder="••••••••">
+                            </div>
+                            <button class="brutal-submit" onclick="window.location.href='index.html'">Access Dashboard</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sign Up Item -->
+                <div class="accordion-item">
+                    <button class="accordion-header signup" onclick="toggleAccordion(this)">
+                        <span>🚀 Join the Revolution</span>
+                        <span class="accordion-icon">▼</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="small-logo">
+                                <div class="logo-icon" style="width:24px; height:24px;"></div>
+                                <div class="logo-text" style="font-size: 1.25rem;"><span class="start">start</span><span class="wise">Wise</span></div>
+                            </div>
+                            <div class="brutal-form-group">
+                                <label class="brutal-label">Full Name</label>
+                                <input type="text" class="brutal-input" placeholder="Jane Doe">
+                            </div>
+                            <div class="brutal-form-group">
+                                <label class="brutal-label">Email Address</label>
+                                <input type="email" class="brutal-input" placeholder="jane@socialimpact.org">
+                            </div>
+                            <div class="brutal-form-group">
+                                <label class="brutal-label">Password</label>
+                                <input type="password" class="brutal-input" placeholder="••••••••">
+                            </div>
+                            <button class="brutal-submit" onclick="window.location.href='index.html'">Create Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-nav">
+                <a href="#">Home</a>
+                <a href="#">Features</a>
+                <a href="#">Pricing</a>
+                <a href="#">About Us</a>
+                <a href="#">Contact</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+            
+            <div class="social-icons">
+                <a href="#" aria-label="Twitter"></a>
+                <a href="#" aria-label="LinkedIn"></a>
+                <a href="#" aria-label="GitHub"></a>
+            </div>
+            
+            <div class="credit">
+                made with love by <strong>codenyx</strong> team 9
+            </div>
+        </div>
+    </footer>
+
+</body>
+<script>
+    function toggleAccordion(btn) {
+        const content = btn.nextElementSibling;
+        const isActive = btn.classList.contains('active');
+        
+        // Close all accordions 
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.classList.remove('active');
+            header.nextElementSibling.style.maxHeight = null;
+        });
+
+        if (!isActive) {
+            btn.classList.add('active');
+            content.style.maxHeight = content.scrollHeight + "px";
+        }
+    }
+</script>
+</html>

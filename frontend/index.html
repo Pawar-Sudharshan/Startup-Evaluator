@@ -34,7 +34,7 @@
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
@@ -286,6 +286,114 @@
       align-items: flex-start;
       margin-bottom: 24px;
     }
+
+    /* Neo-Brutalist Flexbox Dashboard Buttons */
+    .brutal-action-btn {
+      flex: 1;
+      text-align: center;
+      min-width: 150px;
+      border: 3px solid #000;
+      box-shadow: 4px 4px 0px #000;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 16px 24px;
+      cursor: pointer;
+      color: #000;
+      text-transform: uppercase;
+      transition: all 0.1s;
+      white-space: nowrap;
+    }
+    .brutal-action-btn:hover {
+      box-shadow: 2px 2px 0px #000;
+      transform: translate(2px, 2px);
+    }
+    
+    /* Reusable brutalist accordion using native tags */
+    .brutal-details {
+      background: #fff;
+      border: 3px solid #000;
+      box-shadow: 6px 6px 0px #000;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      transition: all 0.2s ease;
+    }
+    .brutal-details > summary {
+      cursor: pointer;
+      background: #FFDE59;
+      padding: 20px 24px;
+      font-weight: 900;
+      font-size: 1.15rem;
+      border-bottom: 0px solid #000;
+      text-transform: uppercase;
+      list-style: none;
+      position: relative;
+    }
+    /* Hide Apple's native widget */
+    .brutal-details > summary::-webkit-details-marker {
+      display: none;
+    }
+    /* Custom Neo-Brutalist arrow */
+    .brutal-details > summary::after {
+      content: "▼";
+      position: absolute;
+      right: 24px;
+      transform: rotate(0deg);
+      transition: transform 0.2s;
+    }
+    .brutal-details[open] > summary::after {
+      transform: rotate(180deg);
+    }
+    .brutal-details > summary:hover {
+      background: var(--accent);
+    }
+    .brutal-details[open] > summary {
+      border-bottom: 3px solid #000;
+      background: var(--main-black);
+      color: var(--success);
+    }
+    .brutal-details-content {
+      padding: 24px;
+      background: #fafafa;
+      border-top: none;
+    }
+
+    /* Landing view styles */
+    #landing-view {
+      display: none;
+      min-height: 80vh;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .landing-logo {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--main-black);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: -2px;
+      display: inline-block;
+      background: var(--accent);
+      padding: 8px 24px;
+      border: var(--border-width) solid var(--main-black);
+      box-shadow: 6px 6px 0px var(--main-black);
+      transform: rotate(-2deg);
+    }
+    
+    .landing-hero {
+      margin-bottom: 60px;
+      margin-top: 40px;
+    }
+
+    .landing-hero img {
+      max-width: 100%;
+      height: auto;
+      border: var(--border-width) solid var(--main-black);
+      box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--main-black);
+      background: #fff;
+    }
   </style>
   <script
     async
@@ -298,24 +406,47 @@
 
 <body>
 
-  <div id="auth-container" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
-    <!-- Clerk SignIn will mount here -->
+  <!-- Landing View with Neo-Brutalist Accordion -->
+  <div id="landing-view" class="container">
+    <div class="landing-logo">startWise</div>
+    
+    <div style="margin: 40px auto 40px; max-width: 900px;">
+      <h1 class="brutal-title" style="transform: rotate(-1deg); margin-bottom: 24px; font-size: 2rem;">Empowering Social Innovation & Purpose-Driven Entrepreneurship</h1>
+      <p style="font-size: 1.25rem; font-weight: bold; margin-bottom: 32px; padding: 24px; border: var(--border-width) solid var(--main-black); box-shadow: 6px 6px 0px var(--main-black); background: var(--bg-color);">Scattered tasks, lack of impact metrics, and disconnected core teams are challenges that derail social startups. Move beyond traditional business metrics and start building scalable, sustainable innovation instantly.</p>
+    </div>
+
+    <!-- Centered Authentication Action Buttons -->
+    <div style="display: flex; gap: 24px; justify-content: center; margin-bottom: 60px;">
+      <button class="brutal-btn" onclick="openAuth('signIn')" style="background: var(--primary); padding: 16px 32px; font-size: 1.25rem;">🔑 Log In</button>
+      <button class="brutal-btn" onclick="openAuth('signUp')" style="background: var(--accent); padding: 16px 32px; font-size: 1.25rem;">🚀 Sign Up / Join</button>
+    </div>
+
+    <!-- Centered Auth Frame directly replacing the Hero -->
+    <div id="auth-frame" style="display: none; justify-content: center; align-items: center; margin-top: 40px; margin-bottom: 100px;">
+      <div id="auth-sign-in-target" style="display: none; justify-content: center; width: 100%;"></div>
+      <div id="auth-sign-up-target" style="display: none; justify-content: center; width: 100%;"></div>
+    </div>
   </div>
 
-  <div id="app-container" class="container" style="display: none;">
-    <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
-      <div id="user-button"></div>
-    </div>
-    <div class="top-controls">
-      <h1 class="brutal-title">Simulator v1</h1>
-      <div style="display:flex; gap:12px; align-items:center;">
-        <button id="modeBusiness" class="brutal-btn small" style="background: var(--primary);"
-          onclick="setMode('business')">🏢 Business</button>
-        <button id="modeNonprofit" class="brutal-btn small" style="background: #fff;" onclick="setMode('nonprofit')">🤝
-          Non-Profit</button>
-        <button class="brutal-btn small" onclick="toggleLog()" style="margin-left:8px;">Toggle AI Console</button>
-        <button class="brutal-btn small" onclick="toggleWatchlist()" style="background: var(--accent); color: #111; font-weight: bold; margin-left:8px;">📜 View Watchlist</button>
+  <div id="app-container" class="container" style="display: none; padding-top: 0;">
+    
+    <!-- STEP 1: Neo-Brutalist Header -->
+    <header style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 3px solid #000; background: #fff; margin-bottom: 40px; margin-top: 8px;">
+      <div style="font-size: 2rem; font-weight: 700; color: #111; letter-spacing: -1px; border: 3px solid #000; padding: 4px 16px; box-shadow: 4px 4px 0px #000; background: #fff;">
+        <span style="color: var(--primary); font-weight: 800;">start</span><span style="color: #666;">wise</span>
       </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span id="clerk-first-name" style="font-weight: bold; font-size: 1.1rem; text-transform: uppercase;"></span>
+        <div id="user-button"></div>
+      </div>
+    </header>
+
+    <!-- STEP 2: Main Dashboard Buttons Grid -->
+    <div class="top-controls" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; margin-bottom: 40px; border: 3px solid #000; padding: 24px; background: #fafafa; box-shadow: 8px 8px 0px #000;">
+        <button id="modeBusiness" class="brutal-action-btn" style="background: var(--primary); flex: 1 1 22%;" onclick="setMode('business')">🏢 Business Iteration</button>
+        <button id="modeNonprofit" class="brutal-action-btn" style="background: #e0b0ff; flex: 1 1 22%;" onclick="setMode('nonprofit')">🤝 Non-Profit Sector</button>
+        <button class="brutal-action-btn" style="background: var(--accent); flex: 1 1 22%;" onclick="toggleWatchlist()">📜 View Watchlist</button>
+        <button class="brutal-action-btn" style="background: #fff; flex: 1 1 22%;" onclick="toggleLog()">🖥️ AI Console</button>
     </div>
 
     <!-- Watchlist Section -->
@@ -1200,20 +1331,25 @@ ${document.getElementById('scenarioText').innerText}${suggestionsText}`;
         }
 
         projects.forEach(p => {
-          const card = document.createElement('div');
-          card.className = 'brutal-card';
-          card.style.background = '#fff';
+          const card = document.createElement('details');
+          card.className = 'brutal-details';
           card.innerHTML = `
-            <div style="margin-bottom: 8px;">
-              <h3 style="margin-bottom: 4px;">${p.problemStatement || "Problem Statement"}</h3>
-              <p><strong>Solution:</strong> ${p.solution || "Solution Details"}</p>
+            <summary>${p.problemStatement ? p.problemStatement.substring(0, 60) + "..." : "Project Idea"}</summary>
+            <div class="brutal-details-content">
+              <h3 style="margin-bottom: 12px; font-size: 1.25rem;">Problem: ${p.problemStatement || "Problem Statement"}</h3>
+              <p style="font-size: 1.1rem; line-height: 1.6;"><strong>Solution:</strong> ${p.solution || "Solution Details"}</p>
+              
+              <div style="font-size: 0.85rem; color: #555; margin-top: 16px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px dashed #ccc;">
+                <strong>Saved on:</strong> ${new Date(p.createdAt).toLocaleString()}
+              </div>
+              
+              <div style="display: flex; gap: 12px; align-items: center;">
+                <button class="brutal-btn small" style="background: var(--primary); font-size: 1rem; padding: 12px 24px;" onclick="evolveProject('${p._id}')" id="btn-evolve-${p._id}">🌟 Evolve Prototype</button>
+                <span id="loader-evolve-${p._id}" class="brutal-spinner-square" style="display: none; width: 16px; height: 16px;"></span>
+              </div>
+              
+              <div id="result-${p._id}" style="margin-top: 24px; padding: 24px; border: 3px dashed var(--main-black); display: none; background: #e8f5e9;"></div>
             </div>
-            <div style="font-size: 0.8rem; color: #555; margin-bottom: 12px;">Saved on: ${new Date(p.createdAt).toLocaleString()}</div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <button class="brutal-btn small" style="background: var(--primary);" onclick="evolveProject('${p._id}')" id="btn-evolve-${p._id}">🌟 Evolve Prototype</button>
-              <span id="loader-evolve-${p._id}" class="brutal-spinner-square" style="display: none; width: 16px; height: 16px;"></span>
-            </div>
-            <div id="result-${p._id}" style="margin-top: 16px; padding: 16px; border: 3px dashed var(--main-black); display: none; background: #e8f5e9;"></div>
           `;
           container.appendChild(card);
         });
@@ -1285,21 +1421,57 @@ ${document.getElementById('scenarioText').innerText}${suggestionsText}`;
   </div>
 
   <script>
+    function openAuth(type) {
+      const frame = document.getElementById('auth-frame');
+      const signInTarget = document.getElementById('auth-sign-in-target');
+      const signUpTarget = document.getElementById('auth-sign-up-target');
+      
+      // Reveal the central container
+      frame.style.display = 'flex';
+      
+      if (type === 'signIn') {
+        signUpTarget.style.display = 'none';
+        signInTarget.style.display = 'flex';
+        // Only mount if not already present
+        if (!signInTarget.hasChildNodes()) {
+          window.Clerk.mountSignIn(signInTarget);
+        }
+      } else {
+        signInTarget.style.display = 'none';
+        signUpTarget.style.display = 'flex';
+        // Only mount if not already present
+        if (!signUpTarget.hasChildNodes()) {
+          window.Clerk.mountSignUp(signUpTarget);
+        }
+      }
+      
+      // Auto-scroll slightly to draw attention
+      setTimeout(() => {
+         frame.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+
     window.addEventListener("load", async function () {
       await window.Clerk.load();
       
-      const authContainer = document.getElementById("auth-container");
+      const landingView = document.getElementById("landing-view");
       const appContainer = document.getElementById("app-container");
       const userBtnContainer = document.getElementById("user-button");
 
       if (!window.Clerk.user) {
-        authContainer.style.display = "flex";
+        landingView.style.display = "block";
         appContainer.style.display = "none";
-        window.Clerk.mountSignIn(authContainer);
+        // Clerk UI remains unmounted until they explicitly click the buttons!
       } else {
-        authContainer.style.display = "none";
+        landingView.style.display = "none";
         appContainer.style.display = "block";
         window.Clerk.mountUserButton(userBtnContainer);
+        
+        // Step 4: Add User Name to Header dynamically
+        const fnameSpan = document.getElementById("clerk-first-name");
+        if (fnameSpan && window.Clerk.user.firstName) {
+            fnameSpan.innerText = `👋, ${window.Clerk.user.firstName}`;
+        }
       }
 
       // Intercept fetch to automatically attach JWT to our backend API calls

@@ -116,7 +116,7 @@ CRITICAL INSTRUCTION: You MUST generate EXACTLY 5 choices for the user to pick f
 
 Do NOT wrap the scenario string in internal quotation marks. Output JSON exactly like this:
 {
-  "scenario": "A 2-sentence description of the event...",
+  "scenario": "A detailed, deeply engaging 4-sentence paragraph describing the specific monthly events...",
   "tier": "${difficultyLevel}",
   "choices": [
     { "action": "String describing the first sound option" },
@@ -144,7 +144,7 @@ CRITICAL INSTRUCTION: You MUST generate EXACTLY 5 choices for the user to pick f
 
 Do NOT wrap the scenario string in internal quotation marks. Output JSON exactly like this:
 {
-  "scenario": "A 2-sentence description of the event...",
+  "scenario": "A highly detailed, engaging 4-sentence paragraph describing the specific monthly market shift...",
   "tier": "${difficultyLevel}",
   "choices": [
     { "action": "String describing the first sound option" },
