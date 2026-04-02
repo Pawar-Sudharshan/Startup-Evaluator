@@ -4,15 +4,15 @@ import { analyzeAndInit, simulateAndProgress, scenarioPrompt, feedbackPrompt, ge
 
 const router = express.Router();
 
-// Enforce authentication on all startup routes
-router.use(requireAuth());
-
+// ── PUBLIC ROUTES (No auth required — freemium AI simulation) ──
 router.post('/analyze-startup', analyzeAndInit);
-router.get('/watchlist', getWatchlist);
-router.post('/iterate-startup', iterateProject);
-router.post('/save-to-watchlist', saveToWatchlist);
 router.post('/simulate-step', simulateAndProgress);
 router.post('/generate-scenario', scenarioPrompt);
 router.post('/feedback', feedbackPrompt);
+
+// ── PROTECTED ROUTES (Clerk auth required — user data persistence) ──
+router.get('/watchlist', requireAuth(), getWatchlist);
+router.post('/save-to-watchlist', requireAuth(), saveToWatchlist);
+router.post('/iterate-startup', requireAuth(), iterateProject);
 
 export default router;

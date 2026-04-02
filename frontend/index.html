@@ -645,7 +645,8 @@
   </div>
 
   <script>
-    const API_URL = 'http://localhost:8080/api';
+    // Use relative URL when served from the backend (production), localhost for dev
+    const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:8080/api' : '/api';
     let currentState = null;
     let pendingDecision = null; // Stores what the user picked to feed to feedback API
     let stateBeforeDecision = null; // Saves state before simulation step
@@ -770,6 +771,15 @@
     }
 
     async function saveToWatchlist() {
+      // ── AUTH GATE: Only logged-in users can save to watchlist ──
+      if (!window.Clerk || !window.Clerk.user) {
+        alert('Please sign up or log in to save your progress to the Watchlist!');
+        if (window.Clerk && window.Clerk.openSignIn) {
+          window.Clerk.openSignIn();
+        }
+        return;
+      }
+
       const btn = document.getElementById('saveToWatchlistBtn');
       btn.innerText = 'Saving...';
       btn.disabled = true;
@@ -1319,6 +1329,13 @@ ${document.getElementById('scenarioText').innerText}${suggestionsText}`;
 
     async function fetchWatchlist() {
       const container = document.getElementById('watchlist-container');
+
+      // ── AUTH GATE: Only logged-in users can view their watchlist ──
+      if (!window.Clerk || !window.Clerk.user) {
+        container.innerHTML = '<div style="padding: 24px; text-align: center; border: 3px solid #000; background: #fff;"><p style="font-size: 1.1rem; font-weight: bold; margin-bottom: 16px;">🔒 Sign in to view your saved projects</p><button class="brutal-btn" onclick="window.Clerk.openSignIn()" style="background: var(--primary);"><i class="bi bi-key-fill"></i> Log In / Sign Up</button></div>';
+        return;
+      }
+
       container.innerHTML = '<div style="padding: 20px; text-align: center;"><span class="brutal-spinner-square"></span> Loading Watchlist...</div>';
       try {
         const res = await fetch(`${API_URL}/watchlist`);
@@ -1361,6 +1378,15 @@ ${document.getElementById('scenarioText').innerText}${suggestionsText}`;
     }
 
     async function evolveProject(projectId) {
+      // ── AUTH GATE: Only logged-in users can evolve projects ──
+      if (!window.Clerk || !window.Clerk.user) {
+        alert('Please sign up or log in to evolve your projects!');
+        if (window.Clerk && window.Clerk.openSignIn) {
+          window.Clerk.openSignIn();
+        }
+        return;
+      }
+
       const btn = document.getElementById(`btn-evolve-${projectId}`);
       const loader = document.getElementById(`loader-evolve-${projectId}`);
       const resContainer = document.getElementById(`result-${projectId}`);
@@ -1459,19 +1485,22 @@ ${document.getElementById('scenarioText').innerText}${suggestionsText}`;
       const appContainer = document.getElementById("app-container");
       const userBtnContainer = document.getElementById("user-button");
 
-      if (!window.Clerk.user) {
-        landingView.style.display = "block";
-        appContainer.style.display = "none";
-        // Clerk UI remains unmounted until they explicitly click the buttons!
-      } else {
-        landingView.style.display = "none";
-        appContainer.style.display = "block";
+      // Show the app to ALL visitors (freemium model)
+      landingView.style.display = "none";
+      appContainer.style.display = "block";
+
+      if (window.Clerk.user) {
+        // Logged-in: show user button and greeting
         window.Clerk.mountUserButton(userBtnContainer);
-        
-        // Step 4: Add User Name to Header dynamically
         const fnameSpan = document.getElementById("clerk-first-name");
         if (fnameSpan && window.Clerk.user.firstName) {
-            fnameSpan.innerHTML = `<i class="bi bi-emoji-smile-fill"></i>, ${window.Clerk.user.firstName}`;
+          fnameSpan.innerHTML = `<i class="bi bi-emoji-smile-fill"></i>, ${window.Clerk.user.firstName}`;
+        }
+      } else {
+        // Guest: show a subtle login prompt in place of the user button
+        const fnameSpan = document.getElementById("clerk-first-name");
+        if (fnameSpan) {
+          fnameSpan.innerHTML = '<span style="cursor:pointer;text-decoration:underline;" onclick="window.Clerk.openSignIn()"><i class="bi bi-person-plus-fill"></i> Sign In</span>';
         }
       }
 
